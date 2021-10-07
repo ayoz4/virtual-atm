@@ -34,8 +34,6 @@ function ATM() {
   }, [outputLimit]);
 
   function onSubmit() {
-    console.log("amount", amount, "limit", limit, "result", result);
-
     if (!amount) {
       setErrorText("Пожалуйста впишите в поле сумму");
       return;
@@ -47,7 +45,11 @@ function ATM() {
       return;
     }
     setErrorText("");
-    setSum(Number.parseFloat(sum) + Number.parseFloat(amount));
+    setSum(
+      Number.parseFloat(
+        (Number.parseFloat(sum) + Number.parseFloat(amount)).toFixed(2)
+      )
+    );
 
     let resultCopy = Object.assign({}, result);
 
@@ -59,7 +61,9 @@ function ATM() {
         }
 
         if (resultCopy.hasOwnProperty(key)) {
-          resultCopy[key] += banknotes[key];
+          resultCopy[key] = Number.parseFloat(
+            (resultCopy[key] + banknotes[key]).toFixed(2)
+          );
         }
       }
 
@@ -79,6 +83,27 @@ function ATM() {
 
   function error(text) {
     return <div className="atm__error">{text}</div>;
+  }
+
+  function getFraction(number) {
+    let fraction = "";
+
+    const dotreg = new RegExp(/\./);
+    const commareg = new RegExp(/\,/);
+
+    if (dotreg.test(number)) {
+      fraction = number.toString().split(".")[1];
+    }
+
+    if (commareg.test(number)) {
+      fraction = number.toString().split(",")[1];
+    }
+
+    if (fraction.length === 1) {
+      fraction = fraction + "0";
+    }
+
+    return fraction;
   }
 
   return (
@@ -133,12 +158,26 @@ function ATM() {
             <span>Номинал</span> <span>Количество</span>
           </li>
           {result &&
-            Object.keys(result).map((value) => (
-              <li className="atm__item" key={value}>
-                <span>{langRu[value] || value}</span>{" "}
-                <span>{result[value]}</span>
-              </li>
-            ))}
+            Object.keys(result)
+              .filter((value) => value !== "remains")
+              .map((value) => (
+                <li className="atm__item" key={value}>
+                  <span>{langRu[value] || value}</span>{" "}
+                  <span>{result[value]}</span>
+                </li>
+              ))}
+          {result?.remains && (
+            <li className="atm__item">
+              <span>{langRu["remains"]}</span>
+              <span>
+                {`${Math.trunc(result.remains)} р. ${
+                  !Number.isInteger(result.remains)
+                    ? getFraction(result.remains)
+                    : 0
+                } к.`}
+              </span>
+            </li>
+          )}
         </ul>
       </div>
     </div>
