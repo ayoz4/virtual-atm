@@ -1,0 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+$button-bg: #9999ff;
+
+.button {
+  font-family: "Roboto", sans-serif;
+  font-size: 1em;
+  padding: 1em 2em;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  background-color: $button-bg;
+  color: #ffffff;
+  transition: transform ease 0.3s;
+  box-shadow: 1px 16px 16px hsl(240, 100%, 80% / 0.85);
+}
+
+.button:hover {
+  transform: scale(1.1);
+  background-color: darken($button-bg, 5%);
+}
+
+.button:active {
+  transform: scale(0.8);
+  background-color: darken($button-bg, 5%);
+}
