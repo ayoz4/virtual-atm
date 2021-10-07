@@ -24,23 +24,3 @@ export const useOutsideDetecter = (init) => {
     ref,
   };
 };
-
-export const useKey = (key, cb) => {
-  const callbackRef = useRef(cb);
-
-  useEffect(() => {
-    callbackRef.current = cb;
-  });
-
-  useEffect(() => {
-    function handle(e) {
-      if (e.code === key) {
-        console.log(cb());
-      }
-    }
-
-    document.addEventListener("keypress", handle);
-
-    return () => document.removeEventListener("keypress", handle);
-  }, [key]);
-};

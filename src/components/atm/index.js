@@ -16,8 +16,18 @@ function ATM() {
   const [outputLimit, setLimitOutput] = useState(limits[0]);
   const [limit, setLimit] = useState(limits[0] || []);
   const [result, setResult] = useState(null);
+  const [errorText, setErrorText] = useState("");
 
-  useKey("Enter", onSubmit);
+  useEffect(() => {
+    const listener = (e) => {
+      if (e.code === "Enter") {
+        onSubmit();
+      }
+    };
+
+    document.addEventListener("keydown", listener);
+    return () => document.removeEventListener("keydown", listener);
+  }, [result, amount, limit]);
 
   useEffect(() => {
     setAmount("");
@@ -25,24 +35,26 @@ function ATM() {
   }, [outputLimit]);
 
   function onSubmit() {
-    // if (result?.remains > 50) return;
+    console.log("amount", amount, "limit", limit, "result", result);
 
-    setSum(Number.parseFloat(sum) + Number.parseFloat(amount));
+    if (!amount) {
+      setErrorText("Пожалуйста впишите в поле сумму");
+      return;
+    }
 
     const banknotes = getBanknotes(amount, limit.value);
-    if (banknotes.remains > 50) return;
-    console.log(banknotes);
+    if (banknotes.remains > 50) {
+      setErrorText("Банкомат не может выдать заданную сумму");
+      return;
+    }
+    setErrorText("");
+    setSum(Number.parseFloat(sum) + Number.parseFloat(amount));
+
     let resultCopy = Object.assign({}, result);
 
     if (result) {
       for (const key in banknotes) {
-        // if (key === "remains" && resultCopy.hasOwnProperty("remains")) {
-        //   resultCopy.remains += banknotes.remains;
-        //   continue;
-        // }
-
         if (!resultCopy.hasOwnProperty(key)) {
-          // resultCopy = { ...resultCopy, ...banknotes };
           resultCopy[key] = banknotes[key];
           continue;
         }
@@ -52,7 +64,6 @@ function ATM() {
         }
       }
 
-      console.log("banknotes", banknotes, "resultCopy", resultCopy);
       setResult(resultCopy);
     } else setResult(banknotes);
 
@@ -67,32 +78,14 @@ function ATM() {
     setLimit({ ...limit, value: limitCopy });
   }
 
+  function error(text) {
+    return <div className="atm__error">{text}</div>;
+  }
+
   return (
     <div className="atm">
-      <Select
-        options={limits}
-        setSelected={(attr) => {
-          setLimit(attr);
-          setLimitOutput(attr);
-        }}
-        selected={limit}
-        name="key"
-        value={""}
-      />
-
-      <Input
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        type="number"
-        placeholder="Введите сумму"
-      />
-
-      <Numpad value={amount} setValue={setAmount} />
-
-      <Button onClick={onSubmit}>Выдать</Button>
-
-      <div className="atm__info">
-        <h3>Оставшиеся купюры</h3>
+      <div className="atm__limits">
+        <h3 className="atm__header">Оставшиеся купюры</h3>
         <ul className="atm__list">
           <li className="atm__item atm__header">
             <span>Номинал</span> <span>Количество</span>
@@ -103,24 +96,51 @@ function ATM() {
             </li>
           ))}
         </ul>
+      </div>
 
-        {result && (
-          <>
-            <h3>Выданная сумма: {sum}</h3>
-            <h3>Выданные купюры</h3>
-            <ul className="atm__list">
-              <li className="atm__item atm__header">
-                <span>Номинал</span> <span>Количество</span>
+      <div className="atm__main">
+        <Select
+          options={limits}
+          setSelected={(attr) => {
+            setLimit(attr);
+            setLimitOutput(attr);
+          }}
+          selected={limit}
+          name="key"
+          value={""}
+        />
+
+        <Input
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          type="number"
+          placeholder="Введите сумму"
+        />
+
+        <Numpad value={amount} setValue={setAmount} />
+
+        <Button onClick={() => onSubmit(amount)} autofocus>
+          Выдать
+        </Button>
+
+        {errorText && error(errorText)}
+      </div>
+
+      <div className="atm__result">
+        <h3 className="atm__header">Выданная сумма: {sum}</h3>
+        <h3 className="atm__header">Выданные купюры</h3>
+        <ul className="atm__list">
+          <li className="atm__item atm__header">
+            <span>Номинал</span> <span>Количество</span>
+          </li>
+          {result &&
+            Object.keys(result).map((value) => (
+              <li className="atm__item" key={value}>
+                <span>{langRu[value] || value}</span>{" "}
+                <span>{result[value]}</span>
               </li>
-              {Object.keys(result).map((value) => (
-                <li className="atm__item" key={value}>
-                  <span>{langRu[value] || value}</span>{" "}
-                  <span>{result[value]}</span>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+            ))}
+        </ul>
       </div>
     </div>
   );

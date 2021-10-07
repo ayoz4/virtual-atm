@@ -2,16 +2,17 @@ import React from "react";
 
 import "./Button.scss";
 
-function Button({ children, onClick }) {
+function Button({ children, onClick, autofocus = false }) {
   return (
     <button
       className="button"
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
-          console.log("asdasd");
+          onClick();
         }
       }}
+      autoFocus={autofocus}
     >
       {children}
     </button>
