@@ -13,15 +13,16 @@ import { useKey } from "../../services/hooks";
 function ATM() {
   const [amount, setAmount] = useState("");
   const [sum, setSum] = useState(0);
+  const [outputLimit, setLimitOutput] = useState(limits[0]);
   const [limit, setLimit] = useState(limits[0] || []);
   const [result, setResult] = useState(null);
 
   useKey("Enter", onSubmit);
 
-  // useEffect(() => {
-  //   setAmount("");
-  //   setResult(null);
-  // }, [limit]);
+  useEffect(() => {
+    setAmount("");
+    setResult(null);
+  }, [outputLimit]);
 
   function onSubmit() {
     if (result?.remains > 50) return;
@@ -29,7 +30,6 @@ function ATM() {
     setSum(Number.parseFloat(sum) + Number.parseFloat(amount));
 
     const banknotes = getBanknotes(amount, limit.value);
-    console.log(banknotes);
     let resultCopy = Object.assign({}, result);
 
     if (result) {
@@ -48,8 +48,7 @@ function ATM() {
       setResult(resultCopy);
     } else setResult(banknotes);
 
-    let limitCopy = {};
-    Object.assign(limitCopy, limit.value);
+    let limitCopy = Object.assign({}, limit.value);
 
     for (const key in limitCopy) {
       if (banknotes.hasOwnProperty(key)) {
@@ -64,7 +63,10 @@ function ATM() {
     <div className="atm">
       <Select
         options={limits}
-        setSelected={setLimit}
+        setSelected={(attr) => {
+          setLimit(attr);
+          setLimitOutput(attr);
+        }}
         selected={limit}
         name="key"
         value={""}
