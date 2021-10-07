@@ -24,19 +24,25 @@ function ATM() {
   // }, [limit]);
 
   function onSubmit() {
-    if (result?.remains > 50) return;
+    // if (result?.remains > 50) return;
 
     setSum(Number.parseFloat(sum) + Number.parseFloat(amount));
 
     const banknotes = getBanknotes(amount, limit.value);
+    if (banknotes.remains > 50) return;
     console.log(banknotes);
     let resultCopy = Object.assign({}, result);
 
     if (result) {
       for (const key in banknotes) {
-        if (!resultCopy.hasOwnProperty(key)) {
-          resultCopy = { ...resultCopy, ...banknotes };
-          console.log(resultCopy);
+        // if (key === "remains" && resultCopy.hasOwnProperty("remains")) {
+        //   resultCopy.remains += banknotes.remains;
+        //   continue;
+        // } 
+
+        if (!resultCopy.hasOwnProperty(key)) {      
+          // resultCopy = { ...resultCopy, ...banknotes };
+          resultCopy[key] = banknotes[key];
           continue;
         }
 
@@ -45,6 +51,7 @@ function ATM() {
         }
       }
 
+      console.log("banknotes", banknotes, "resultCopy", resultCopy)
       setResult(resultCopy);
     } else setResult(banknotes);
 

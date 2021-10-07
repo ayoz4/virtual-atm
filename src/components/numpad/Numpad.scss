@@ -6,12 +6,13 @@
   &__list {
     list-style: none;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 60px 1fr 60px;
     font-size: 24px;
     gap: 12px;
     padding: 0;
     margin: 0;
     direction: rtl;
+    place-items: center;
   }
 
   &__item {
