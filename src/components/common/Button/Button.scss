@@ -14,13 +14,14 @@ $button-bg: #9999ff;
   position: relative;
   background-color: $button-bg;
   color: #ffffff;
-  transition: transform ease 0.3s;
-  box-shadow: 1px 16px 16px hsl(240, 100%, 80% / 0.85);
+  transition: transform ease 0.3s, box-shadow ease 0.3s;
+  box-shadow: 8px 8px 16px hsl(240, 100%, 80% / 0.85);
 }
 
 .button:hover {
   transform: scale(1.1);
   background-color: darken($button-bg, 5%);
+  box-shadow: 13px 8px 16px hsl(240, 100%, 80% / 0.85);
 }
 
 .button:active {
